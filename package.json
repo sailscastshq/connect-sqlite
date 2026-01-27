@@ -1,0 +1,35 @@
+{
+  "name": "@sailscastshq/connect-sqlite",
+  "description": "SQLite session store for Sails.js using better-sqlite3",
+  "version": "1.0.0",
+  "author": "Kelvin Omereshone <kelvin@sailscasts.com>",
+  "license": "MIT",
+  "main": "./index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sailscastshq/connect-sqlite.git"
+  },
+  "keywords": [
+    "sails",
+    "sailsjs",
+    "sqlite",
+    "session",
+    "better-sqlite3",
+    "connect"
+  ],
+  "dependencies": {
+    "better-sqlite3": "^11.0.0"
+  },
+  "peerDependencies": {
+    "sails": "^1.0.0"
+  },
+  "devDependencies": {
+    "express-session": "^1.18.1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}
