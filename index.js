@@ -5,33 +5,13 @@
  */
 
 const Database = require('better-sqlite3')
+const fs = require('fs')
+const path = require('path')
 
 /**
  * One day in seconds (default TTL)
  */
 const ONE_DAY = 86400
-
-/**
- * Parse a SQLite URL into a file path
- * Supports: sqlite:./path/to/db.sqlite, sqlite::memory:, or just a file path
- * @param {string} url
- * @returns {string} Database file path or ':memory:'
- */
-function parseUrl(url) {
-  if (!url) return null
-
-  // Handle sqlite: protocol
-  if (url.startsWith('sqlite:')) {
-    const path = url.slice(7) // Remove 'sqlite:'
-    if (path === ':memory:' || path === 'memory:') {
-      return ':memory:'
-    }
-    return path
-  }
-
-  // Plain file path
-  return url
-}
 
 /**
  * Return the SQLiteStore extending connect's session Store.
@@ -48,8 +28,7 @@ module.exports = function (session) {
      * Initialize SQLiteStore with the given options.
      *
      * @param {Object} options
-     * @param {string} [options.url] - SQLite URL (sqlite:./path/to/db.sqlite or sqlite::memory:)
-     * @param {string} [options.db] - Database file path (alternative to url)
+     * @param {string} [options.url] - Database path (e.g. './db/sessions.db' or ':memory:')
      * @param {Object} [options.client] - Existing better-sqlite3 Database instance
      * @param {string} [options.table='sessions'] - Table name for sessions
      * @param {string} [options.prefix='sess:'] - Key prefix for session IDs
@@ -76,8 +55,16 @@ module.exports = function (session) {
         this.db = options.client
         this._ownDb = false
       } else {
-        // Create new connection from url or db path
-        const dbPath = parseUrl(options.url) || options.db || ':memory:'
+        const dbPath = options.url || ':memory:'
+
+        // Ensure parent directory exists for file-based databases
+        if (dbPath !== ':memory:') {
+          const dir = path.dirname(dbPath)
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true })
+          }
+        }
+
         this.db = new Database(dbPath)
         this._ownDb = true
 
